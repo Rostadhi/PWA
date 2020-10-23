@@ -1,3 +1,5 @@
+const { resolve } = require("path");
+
 var league_id = 2021;
 var token = '34122c53c47d4dc39f7ca8cad6b6e149';
 var base_url = "https://api.football-data.org/v2/";
@@ -133,6 +135,7 @@ function getStandings() {
 }
 
 function getTeamById() {
+  return new Promise(function(resolve, reject){
     var urlParams = new URLSearchParams(window.location.search);
     var idParam = urlParams.get("id");
     var team_id_url = `${base_url}teams/${idParam}`;
@@ -245,5 +248,52 @@ function getTeamById() {
           </div>
                       `;
         document.getElementById("body-content").innerHTML = teamHTML;
+        resolve(data);resolve(data);
       });
-  }
+  })
+  function getSavedTeams() {  
+  getAll().then(​function​(data) {    
+      console.log(data);
+       ​// Menyusun komponen card artikel secara dinamis
+      ​var​ teamsHTML = ​""​;    
+      data.forEach(​function​(data) {      
+        teamsHTML += ​`            
+        <div class="row">            
+        <div class="col s12">              
+        <div class="card">                
+        <div class="card-image">                  
+        <img src="​${​data.crestUrl​}​">                  
+        <button class="btn-floating halfway-fab waves-effect
+        waves-light red" id="delete" value="​${​data.id​}​"><i
+        class="material-icons">delete</i></button>                
+                </div>                
+                  <div class="card-content">                
+                  <span class="card-title" align="center" style="font-weight:bold;
+        margin-bottom:20px; color:#0D47A1;"><u>​${​data.name​}​</u></span>                
+                  <p align="center">Nickname : ​${​data.shortName​}​<br>Address :
+                  ${​data.address​}​<br>Founded : ​${​data.founded​}​<br>Club Colors :
+                  ${​data.clubColors​}​<br>Venue : ​${​data.venue​}​</p>                
+                  </div>              
+                </div>            
+              </div>          
+            </div>              
+              `​;    
+            
+      });​
+      // Sisipkan komponen card ke dalam elemen dengan id #body-content    
+      document.getElementById(​"body-content"​).innerHTML = teamsHTML;
+      ​let​ btn = document.querySelectorAll(​".btn-floating"​);​
+        for​(​let​ button ​of​ btn) {               
+          button.addEventListener(​"click"​, ​function​ (event) {
+            ​let​ id = Number(button.value);                   
+            console.log(id);​
+            var​ toastHTML = ​'<span>Successfully remove the team fromfavorite</span><buttononclick="M.Toast.getInstance(this.parentElement).dismiss()" class="btn-flattoast-action">Close</button>'​;                   
+            M.toast({html: toastHTML});                   
+            dbDeleteTeam(id).then(() ​=>​ {                       
+              getSavedTeams()                   
+            })               
+          })           
+        }  
+  });
+}
+}
